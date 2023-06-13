@@ -7,20 +7,25 @@
     <div class="container">
 
         <header>
-            <h1>阿部寛のHP 逆RTA<br>計測タイマー</h1>
+            <h1>阿部寛のホームページ計測</h1>
         </header>
         <div>
-            経過時間
-            <h1 id="realtime-clock">00:00:00</h1>
+            <h3>計測時間</h3>
+            <div class="vertical-flex">
+                <h1 id="realtime-clock">000:00:00:00:000</h1>
+                <button id="stop-record">ストップ</button>
+            </div>
         </div>
         <div>
-            ベストタイム
-            <h1 id="best-time">00:00:00</h1>
-            <button id="reset">リセット</button>
+            <h3>ベストタイム（最遅）</h3>
+            <div class="vertical-flex">
+                <h1 id="best-time">000:00:00:00:000</h1>
+                <button id="reset">リセット</button>
+            </div>
         </div>
         <div>
             <input type="checkbox" id="enable-loop" name="enable-loop">
-            <label for="enable-loop">読み込み後に自動リロード</label>
+            <label for="enable-loop">読み込み後に自動リロードを繰り返す</label>
         </div>
     </div>
 </body>
@@ -31,15 +36,33 @@
         padding: 0;
     }
 
-    div.container {
-        padding: 5px;
-        background-color: darkslategray;
-        color: #fff;
-        width: 300px;
+    body {
+	    background-image: url(bg3.png);
+	    background-repeat:  repeat;
     }
+
+    div {
+        padding: 5px;
+        
+    }
+
+    div.container {
+        width: 350px;
+    }
+    
+    div.vertical-flex {
+        display: flex;
+        flex-direction: row;
+    }
+
+    div.vertical-flex h1 {
+        margin-right: 10px;
+        font-size: 36px;
+    }
+
     h1 {
-        /* font-size: 10px; */
         font-weight: bold;
+        margin-bottom: 5px;
     }
     header {
         margin-bottom: 5px;

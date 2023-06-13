@@ -1,10 +1,11 @@
 
 const strg = chrome.storage.local;
 // console.debug(strg);
+const sleep = (second) => sleepMsec(second * 1000);
+const sleepMsec = (msec) => new Promise(resolve => setTimeout(resolve, msec));
 
 const formatDate = (date) => {
-    return ""
-        + ((date.getUTCDate() - 1) > 0 ? ('00' + (date.getUTCDate() - 1)).slice(-2) + ":" : '')
+    return ((date.getUTCDate() - 1) > 0 ? ('00' + (date.getUTCDate() - 1)).slice(-2) + ":" : '')
         + ('00' + date.getUTCHours()).slice(-2) + ":"
         + ('00' + date.getMinutes()).slice(-2) + ":"
         + ('00' + date.getSeconds()).slice(-2) + ":"
@@ -29,10 +30,18 @@ const getLastEndTime = async () => {
     return await strg.get(['lastEndTime']).then((result) => new Date(Number(result.lastEndTime)));
 }
 
-const getLastLoadTime = () => {
-    startTime = getLastStartTime();
-    endTime = getLastEndTime();
+const getLastLoadTime = async () => {
+    return await getLastLoadMsec().then((msec) => new Date(msec));
+}
+
+const getLastLoadMsec = async () => {
+    startTime = await getLastStartTime();
+    endTime = await getLastEndTime();
     return endTime - startTime;
+}
+
+const getBestTime = async () => {
+    return await strg.get(['bestTime']).then((result) => new Date(Number(result.bestTime)));
 }
 
 const isStatusLoading = async () => {
@@ -57,24 +66,48 @@ const loaded = async () => {
         console.log('missing start time');
         return false;
     });
-    if (!isLoading) {
-        return;
+    
+    
+    if (isLoading) {
+        await strg.set({'lastEndTime': new Date().getTime().toString(), 'status': 'loaded'}).then(async () => {
+            await strg.get(['lastStartTime', 'lastEndTime']).then(async (result) => {
+                const startTime = new Date(Number(result.lastStartTime));
+                const endTime = new Date(Number(result.lastEndTime));
+                console.log('start time: ', startTime);
+                console.log('end time: ', endTime);
+                
+                await strg.set({'lastLoadTime': (endTime - startTime).toString()});
+                console.log('load time: ', formatDate(new Date(endTime - startTime)));
+            });
+        });
+        
+        await strg.get(['bestTime']).then(async (result) => {
+
+            if (result.bestTime === undefined) {
+                strg.set({'bestTime': (await getLastLoadMsec()).toString()});
+                console.log('best time: ', formatDate(await getBestTime()));
+                return;
+            }
+
+            if (Number(result.bestTime) < await getLastLoadMsec()) {
+                strg.set({'bestTime': (await getLastLoadMsec()).toString()});
+                console.log('best time: ', formatDate(await getBestTime()));
+                return;
+            }
+        });
     }
 
-    await strg.set({'lastEndTime': new Date().getTime().toString(), 'status': 'loaded'}).then(async () => {
-        await strg.get(['lastStartTime', 'lastEndTime']).then(async (result) => {
-            const startTime = new Date(Number(result.lastStartTime));
-            const endTime = new Date(Number(result.lastEndTime));
-            console.log('start time: ', startTime);
-            console.log('end time: ', endTime);
-            
-            await strg.set({'lastLoadTime': (endTime - startTime).toString()});
-            console.log('load time: ', formatDate(new Date(endTime - startTime)));
-        });
-    });
+    strg.get(['autoReload']).then(async (result) => {
+        if (result.autoReload === 'enabled') {
+            console.log('auto reload in 5 seconds...');
 
-    // location.reload();
+            await sleep(5);
+            // レギュ外記録になるがlastStartTimeをセットする
+            setLastStartTime();
+            location.reload();
+        }
+    });
 }
 
-init();
+//init();
 window.addEventListener('load', loaded);
