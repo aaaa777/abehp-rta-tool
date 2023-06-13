@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+<body>
+    <div class="container">
+
+        <header>
+            <h1>阿部寛のHP 逆RTA<br>計測タイマー</h1>
+        </header>
+        <div>
+            経過時間
+            <h1 id="realtime-clock">00:00:00</h1>
+        </div>
+        <div>
+            ベストタイム
+            <h1 id="best-time">00:00:00</h1>
+            <button id="reset">リセット</button>
+        </div>
+        <div>
+            <input type="checkbox" id="enable-loop" name="enable-loop">
+            <label for="enable-loop">読み込み後に自動リロード</label>
+        </div>
+    </div>
+</body>
+</html>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    div.container {
+        padding: 5px;
+        background-color: darkslategray;
+        color: #fff;
+        width: 300px;
+    }
+    h1 {
+        /* font-size: 10px; */
+        font-weight: bold;
+    }
+    header {
+        margin-bottom: 5px;
+    }
+</style>
+
+<script src="popup.js"></script>
