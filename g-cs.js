@@ -1,8 +1,22 @@
 const strg = chrome.storage.local;
+let abeHPButton;
 
-const abeHPButton = document.querySelector('a[href="http://abehiroshi.la.coocan.jp/"]');
+window.addEventListener('click', async (e) => {
+    if (abeHPButton === undefined) {
+        return;
+    }
+    // e.preventDefault();
+    // console.log(e.srcElement.parentElement.href);
+    if(e.srcElement.parentElement.href === 'http://abehiroshi.la.coocan.jp/') {
+        console.log('abehp timer started');
+        
+        await strg.set({'lastStartTime': new Date().getTime().toString(), 'status': 'loading'});
+        return;
+    }
+});
+    
 
-abeHPButton.addEventListener('click', async (e) => {
-    await strg.set({'lastStartTime': new Date().getTime().toString(), 'status': 'loading'});
-    console.log('abehp timer started');
+window.addEventListener('load', async (e) => {
+    console.log('abeHP timer ready');
+    abeHPButton = document.querySelector('a[href="http://abehiroshi.la.coocan.jp/"]');
 });
