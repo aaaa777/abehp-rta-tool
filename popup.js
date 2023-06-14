@@ -8,6 +8,10 @@ const stopRecordButton = document.getElementById('stop-record');
 const formatDate = (date) => {
     // return ''
     //  + ('' + date.getUTCDate()) not working
+    if(!date) {
+        return '00:00:00.000';
+    }
+
     return ((date.getUTCDate() - 1) > 0 ? ('00' + (date.getUTCDate() - 1)).slice(-2) + "d " : '')
         + ('00' + date.getUTCHours()).slice(-2) + ":"
         + ('00' + date.getMinutes()).slice(-2) + ":"
@@ -34,21 +38,24 @@ const updateClock = async () => {
         let nowLoadTime = new Date() - lastStartTime;
         console.debug('nowLoadTime: ', nowLoadTime);
         clock.innerText = formatDate(new Date(nowLoadTime));
+        stopRecordButton.disabled = false;
         return;
     }
 
     if (status === 'loaded') {
         clock.innerText = formatDate(lastLoadTime);
+        stopRecordButton.disabled = true;
         return;
     }
 
     if (status === 'stopped') {
-        clock.innerText = "記録を中止しました。";
+        clock.innerText = "記録中止";
+        stopRecordButton.disabled = true;
         return;
     }
 
-    clock.innerText = "クリックして記録を開始します。"
-    
+    clock.innerText = "データなし"
+    stopRecordButton.disabled = true;
 
     
     // console.debug('lastStartTime: ', lastStartTime);

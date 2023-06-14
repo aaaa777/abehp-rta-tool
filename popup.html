@@ -17,15 +17,21 @@
             </div>
         </div>
         <div>
-            <h3>ベストタイム（最遅）</h3>
-            <div class="vertical-flex">
-                <h1 id="best-time">000:00:00:00:000</h1>
-                <button id="reset">リセット</button>
-            </div>
-        </div>
-        <div>
-            <input type="checkbox" id="enable-loop" name="enable-loop">
-            <label for="enable-loop">読み込み後に自動リロードを繰り返す</label>
+            <details>
+                <summary>
+                    <span class="do-open">その他の情報</span>
+                    <span class="do-close">簡易表示</span>
+                </summary>
+                <h3>ベストタイム（最遅）</h3>
+                <div class="vertical-flex">
+                    <h1 id="best-time">000:00:00:00:000</h1>
+                    <button id="reset">リセット</button>
+                </div>
+                
+                <input type="checkbox" id="enable-loop" name="enable-loop">
+                <label for="enable-loop">読み込み後に自動リロードを繰り返す</label>
+            </details>
+            
         </div>
     </div>
 </body>
@@ -64,6 +70,16 @@
         font-weight: bold;
         margin-bottom: 5px;
     }
+
+    details[open] .do-open {
+	    display: none ;
+    }
+
+    /* 閉じている状態 */
+    details:not([open]) .do-close {
+        display: none ;
+    }
+
     header {
         padding-left: 5px;
         margin-bottom: 5px;
