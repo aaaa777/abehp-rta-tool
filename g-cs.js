@@ -17,6 +17,11 @@ window.addEventListener('click', async (e) => {
     
 
 window.addEventListener('load', async (e) => {
-    console.log('abeHP timer ready');
     abeHPButton = document.querySelector('a[href="http://abehiroshi.la.coocan.jp/"]');
+    if(abeHPButton !== null) {
+        const linkPopupEle = document.createElement('div');
+        linkPopupEle.innerText = '阿部寛のホームページ計測 準備完了';
+        abeHPButton.parentElement.appendChild(linkPopupEle);
+        console.log('abeHP timer ready');
+    }
 });
