@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "abehiroshi-HP-rta-tool",
-    "description": "阿部寛のHP逆RTAの計測用ツールです",
+    "name": "阿部寛のホームページ 計測",
+    "description": "阿部寛のHP 逆RTAのタイム計測用ツールです。",
     "short_name": "abe-rta-tool",
     "version": "1.0.0",
     "content_scripts": [

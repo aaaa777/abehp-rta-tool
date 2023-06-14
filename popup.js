@@ -8,10 +8,10 @@ const stopRecordButton = document.getElementById('stop-record');
 const formatDate = (date) => {
     // return ''
     //  + ('' + date.getUTCDate()) not working
-    return ((date.getUTCDate() - 1) > 0 ? ('00' + (date.getUTCDate() - 1)).slice(-2) + ":" : '')
+    return ((date.getUTCDate() - 1) > 0 ? ('00' + (date.getUTCDate() - 1)).slice(-2) + "d " : '')
         + ('00' + date.getUTCHours()).slice(-2) + ":"
         + ('00' + date.getMinutes()).slice(-2) + ":"
-        + ('00' + date.getSeconds()).slice(-2) + ":"
+        + ('00' + date.getSeconds()).slice(-2) + "."
         + ('00' + date.getMilliseconds()).slice(-3);
 }
 
