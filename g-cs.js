@@ -8,7 +8,7 @@ window.addEventListener('click', async (e) => {
     // e.preventDefault();
     // console.log(e.srcElement.parentElement.href);
     if(await strg.get(['status']).then((result) => result.status === 'loading')) {
-        console.log('[Abehp timer] last page is not loaded yet');
+        console.log('[Abehp timer] last page is not loaded yet, please wait or stop timer');
         return;
     }
     if(e.srcElement.parentElement.href === 'http://abehiroshi.la.coocan.jp/') {
