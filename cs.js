@@ -52,7 +52,7 @@ let isLastStatusMoving;
 const init = async () => {
     isLastStatusMoving = await strg.get(['status']).then((result) => result.status === 'moving');
     if(!isLastStatusMoving) {
-        console.info('[Abehp timer] last status is moving, timer not started');
+        console.info('[Abehp timer] last status is not moving, timer not started');
         return;
     }
     console.info('[Abehp timer] last page is google, status set loading');
@@ -61,19 +61,24 @@ const init = async () => {
 }
 
 const loaded = async () => {
-    if(!isLastStatusMoving) {
-        return;
-    }
-
+    
     const isLoading = await strg.get(['status']).then((result) => {
-        if (result.status === '') {
+        if (result.status === 'loading') {
             console.info('[Abehp timer] loading page ended');
             return true;
         }
+
         console.info('[Abehp timer] missing start time');
+        if(result.status === 'stopped') {
+            console.info('[Abehp timer] timer already stopped');
+        }
         return false;
     });
     
+    if(!isLastStatusMoving) {
+        console.log('[Abehp timer] but last status is not moving, record not saved');
+        return;
+    }
     
     if (isLoading) {
         await strg.set({'lastEndTime': new Date().getTime().toString(), 'status': 'loaded'}).then(async () => {
@@ -110,7 +115,7 @@ const loaded = async () => {
 
             await sleep(5);
             // レギュ外記録になるがlastStartTimeをセットする
-            setLastStartTime();
+            strg.set({'lastStartTime': new Date().getTime().toString(), 'status': 'moving'});
             location.reload();
         }
     });

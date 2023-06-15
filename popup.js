@@ -34,7 +34,7 @@ const updateClock = async () => {
     console.debug('bestTime: ', bestTime);
     bestTimeEle.innerText = formatDate(bestTime);
 
-    if (status === 'loading') {
+    if (status === 'loading' || status === 'moving') {
         let nowLoadTime = new Date() - lastStartTime;
         console.debug('nowLoadTime: ', nowLoadTime);
         clock.innerText = formatDate(new Date(nowLoadTime));
@@ -54,7 +54,7 @@ const updateClock = async () => {
         return;
     }
 
-    clock.innerText = "データなし"
+    clock.innerText = formatDate(new Date(0));
     stopRecordButton.disabled = true;
 
     
