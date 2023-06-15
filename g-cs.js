@@ -14,7 +14,7 @@ window.addEventListener('click', async (e) => {
     if(e.srcElement.parentElement.href === 'http://abehiroshi.la.coocan.jp/') {
         console.log('[Abehp timer] timer started');
         
-        await strg.set({'lastStartTime': new Date().getTime().toString(), 'status': 'loading'});
+        await strg.set({'lastStartTime': new Date().getTime().toString(), 'status': 'moving'});
         return;
     }
 });

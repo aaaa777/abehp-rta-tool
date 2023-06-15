@@ -12,10 +12,6 @@ const formatDate = (date) => {
         + ('00' + date.getMilliseconds()).slice(-3);
 }
 
-const setLastStartTime = () => {
-    strg.set({'lastStartTime': new Date().getTime().toString()}).then(() => console.debug('start time set'));
-    strg.set({'status': 'loading'});
-}
 
 const setLastEndTime = () => {
     strg.set({'lastEndTime': new Date().getTime().toString()}).then(() => console.debug('end time set'));
@@ -47,32 +43,34 @@ const getBestTime = async () => {
 const isStatusLoading = async () => {
     return await strg.get(['status']).then((res) => {
         r = (res.status === 'loading');
-        console.log('status: ', r);
+        console.info('[Abehp timer] status: ', r);
         return r;
     });
 }
 
-let isLastStatusLoading;
+let isLastStatusMoving;
 const init = async () => {
-    isLastStatusLoading = await strg.get(['status']).then((result) => result.status === 'loading');
-    if(isLastStatusLoading) {
-        console.log('[Abehp timer] last page is not loaded yet');
+    isLastStatusMoving = await strg.get(['status']).then((result) => result.status === 'moving');
+    if(!isLastStatusMoving) {
+        console.info('[Abehp timer] last status is moving, timer not started');
         return;
     }
-    console.log('[Abehp timer] init time: ', await getLastStartTime());
+    console.info('[Abehp timer] last page is google, status set loading');
+    strg.set({'status': 'loading'});
+    console.info('[Abehp timer] init time: ', await getLastStartTime());
 }
 
 const loaded = async () => {
-    if(isLastStatusLoading) {
+    if(!isLastStatusMoving) {
         return;
     }
 
     const isLoading = await strg.get(['status']).then((result) => {
-        if (result.status === 'loading') {
-            console.log('[Abehp timer] loading page ended');
+        if (result.status === '') {
+            console.info('[Abehp timer] loading page ended');
             return true;
         }
-        console.log('[Abehp timer] missing start time');
+        console.info('[Abehp timer] missing start time');
         return false;
     });
     
@@ -82,11 +80,11 @@ const loaded = async () => {
             await strg.get(['lastStartTime', 'lastEndTime']).then(async (result) => {
                 const startTime = new Date(Number(result.lastStartTime));
                 const endTime = new Date(Number(result.lastEndTime));
-                console.log('[Abehp timer] start time: ', startTime);
-                console.log('[Abehp timer] end time: ', endTime);
+                console.info('[Abehp timer] start time: ', startTime);
+                console.info('[Abehp timer] end time: ', endTime);
                 
                 await strg.set({'lastLoadTime': (endTime - startTime).toString()});
-                console.log('[Abehp timer] load time: ', formatDate(new Date(endTime - startTime)));
+                console.info('[Abehp timer] load time: ', formatDate(new Date(endTime - startTime)));
             });
         });
         
@@ -94,13 +92,13 @@ const loaded = async () => {
 
             if (result.bestTime === undefined) {
                 strg.set({'bestTime': (await getLastLoadMsec()).toString()});
-                console.log('[Abehp timer] best time: ', formatDate(await getBestTime()));
+                console.info('[Abehp timer] best time: ', formatDate(await getBestTime()));
                 return;
             }
 
             if (Number(result.bestTime) < await getLastLoadMsec()) {
                 strg.set({'bestTime': (await getLastLoadMsec()).toString()});
-                console.log('[Abehp timer] best time: ', formatDate(await getBestTime()));
+                console.info('[Abehp timer] best time: ', formatDate(await getBestTime()));
                 return;
             }
         });
@@ -108,7 +106,7 @@ const loaded = async () => {
 
     strg.get(['autoReload']).then(async (result) => {
         if (result.autoReload === 'enabled') {
-            console.log('[Abehp timer] auto reload in 5 seconds...');
+            console.info('[Abehp timer] auto reload in 5 seconds...');
 
             await sleep(5);
             // レギュ外記録になるがlastStartTimeをセットする
