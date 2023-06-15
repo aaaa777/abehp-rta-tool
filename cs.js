@@ -49,8 +49,15 @@ const isStatusLoading = async () => {
 }
 
 let isLastStatusMoving;
-const init = async () => {
+const islastStatusMovingCheck = async () => {
+    if(isLastStatusMoving) {
+        return isLastStatusMoving;
+    }
     isLastStatusMoving = await strg.get(['status']).then((result) => result.status === 'moving');
+    return isLastStatusMoving;
+}
+const init = async () => {
+    islastStatusMovingCheck();
     if(!isLastStatusMoving) {
         console.info('[Abehp timer] last status is not moving, timer not started');
         return;
@@ -63,7 +70,7 @@ const init = async () => {
 const loaded = async () => {
     
     const isLoading = await strg.get(['status']).then((result) => {
-        if (result.status === 'loading') {
+        if (result.status === 'loading' || result.status === 'moving') {
             console.info('[Abehp timer] loading page ended');
             return true;
         }
@@ -75,7 +82,7 @@ const loaded = async () => {
         return false;
     });
     
-    if(!isLastStatusMoving) {
+    if(!islastStatusMovingCheck()) {
         console.log('[Abehp timer] but last status is not moving, record not saved');
         return;
     }
