@@ -57,8 +57,7 @@ const islastStatusMovingCheck = async () => {
     return isLastStatusMoving;
 }
 const init = async () => {
-    islastStatusMovingCheck();
-    if(!isLastStatusMoving) {
+    if(!islastStatusMovingCheck()) {
         console.info('[Abehp timer] last status is not moving, timer not started');
         return;
     }
@@ -87,7 +86,7 @@ const loaded = async () => {
         return;
     }
     
-    if (isLoading) {
+    if (isLoading || isLastStatusMoving == undefined) {
         await strg.set({'lastEndTime': new Date().getTime().toString(), 'status': 'loaded'}).then(async () => {
             await strg.get(['lastStartTime', 'lastEndTime']).then(async (result) => {
                 const startTime = new Date(Number(result.lastStartTime));
