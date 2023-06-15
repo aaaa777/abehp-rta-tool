@@ -52,18 +52,27 @@ const isStatusLoading = async () => {
     });
 }
 
+let isLastStatusLoading;
 const init = async () => {
-    strg.set({'lastStartTime': new Date().getTime().toString(), 'status': 'loading'});
-    console.log('init time: ', await getLastStartTime());
+    isLastStatusLoading = await strg.get(['status']).then((result) => result.status === 'loading');
+    if(isLastStatusLoading) {
+        console.log('[Abehp timer] last page is not loaded yet');
+        return;
+    }
+    console.log('[Abehp timer] init time: ', await getLastStartTime());
 }
 
 const loaded = async () => {
+    if(isLastStatusLoading) {
+        return;
+    }
+
     const isLoading = await strg.get(['status']).then((result) => {
         if (result.status === 'loading') {
-            console.log('loading page ended');
+            console.log('[Abehp timer] loading page ended');
             return true;
         }
-        console.log('missing start time');
+        console.log('[Abehp timer] missing start time');
         return false;
     });
     
@@ -73,11 +82,11 @@ const loaded = async () => {
             await strg.get(['lastStartTime', 'lastEndTime']).then(async (result) => {
                 const startTime = new Date(Number(result.lastStartTime));
                 const endTime = new Date(Number(result.lastEndTime));
-                console.log('start time: ', startTime);
-                console.log('end time: ', endTime);
+                console.log('[Abehp timer] start time: ', startTime);
+                console.log('[Abehp timer] end time: ', endTime);
                 
                 await strg.set({'lastLoadTime': (endTime - startTime).toString()});
-                console.log('load time: ', formatDate(new Date(endTime - startTime)));
+                console.log('[Abehp timer] load time: ', formatDate(new Date(endTime - startTime)));
             });
         });
         
@@ -85,13 +94,13 @@ const loaded = async () => {
 
             if (result.bestTime === undefined) {
                 strg.set({'bestTime': (await getLastLoadMsec()).toString()});
-                console.log('best time: ', formatDate(await getBestTime()));
+                console.log('[Abehp timer] best time: ', formatDate(await getBestTime()));
                 return;
             }
 
             if (Number(result.bestTime) < await getLastLoadMsec()) {
                 strg.set({'bestTime': (await getLastLoadMsec()).toString()});
-                console.log('best time: ', formatDate(await getBestTime()));
+                console.log('[Abehp timer] best time: ', formatDate(await getBestTime()));
                 return;
             }
         });
@@ -99,7 +108,7 @@ const loaded = async () => {
 
     strg.get(['autoReload']).then(async (result) => {
         if (result.autoReload === 'enabled') {
-            console.log('auto reload in 5 seconds...');
+            console.log('[Abehp timer] auto reload in 5 seconds...');
 
             await sleep(5);
             // レギュ外記録になるがlastStartTimeをセットする
@@ -109,5 +118,5 @@ const loaded = async () => {
     });
 }
 
-//init();
+init();
 window.addEventListener('load', loaded);
